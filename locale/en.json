@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Complete Guard",
+    "description": "Permission presets and integrity-label guarding in one plugin: approved roots skip escalation prompts, and stray Low labels are reset to Medium at startup and when sessions end."
+  },
+  "settings.title": "Complete Guard"
+}

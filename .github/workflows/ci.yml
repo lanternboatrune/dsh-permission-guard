@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 语法检查
+        run: |
+          set -e
+          for f in index.js client.js lib/*.js; do
+            node --check "$f"
+          done
+      - name: JSON 校验
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const files = ["package.json"];
+            for (const dir of ["locale"]) {
+              if (!fs.existsSync(dir)) continue;
+              for (const f of fs.readdirSync(dir)) {
+                if (f.endsWith(".json")) files.push(path.join(dir, f));
+              }
+            }
+            for (const f of files) JSON.parse(fs.readFileSync(f, "utf8"));
+            console.log("json ok: " + files.join(", "));
+          '
+      - name: 测试
+        run: npm test

@@ -1,0 +1,3 @@
+- insert:
+    - id: permission-guard
+      name: '@local/permission-guard'

@@ -1,0 +1,61 @@
+{
+  "name": "@local/permission-guard",
+  "version": "0.6.0",
+  "private": true,
+  "description": "DeepSeek Harness bundle plugin: one guard for permission presets and integrity labels — approved roots skip escalation prompts, and stray Low integrity labels are reset to Medium at startup and when sessions end.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib/rules.js",
+    "lib/state.js",
+    "lib/gate.js",
+    "lib/integrity.js",
+    "lib/acl.js",
+    "lib/scan-paths.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node test/rules-state.test.mjs && node test/gate.test.mjs && node test/hooks.test.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "cordis",
+    "plugin",
+    "sandbox",
+    "permission",
+    "workspace",
+    "integrity",
+    "acl"
+  ],
+  "license": "MIT",
+  "engines": {
+    "dsh": ">=0.0.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  }
+}
