@@ -11,32 +11,26 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # 插件只服务 Windows：完整性标签、icacls 与路径大小写规则都是 Win32 语义，
+    # 在 Linux runner 上跑测试会按 posix 路径解释而误报失败。
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: 语法检查
+        shell: pwsh
         run: |
-          set -e
-          for f in index.js client.js lib/*.js; do
-            node --check "$f"
-          done
+          $files = @('index.js', 'client.js') + (Get-ChildItem lib/*.js | ForEach-Object { $_.FullName })
+          foreach ($f in $files) {
+            node --check $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
       - name: JSON 校验
+        shell: pwsh
         run: |
-          node -e '
-            const fs = require("fs");
-            const path = require("path");
-            const files = ["package.json"];
-            for (const dir of ["locale"]) {
-              if (!fs.existsSync(dir)) continue;
-              for (const f of fs.readdirSync(dir)) {
-                if (f.endsWith(".json")) files.push(path.join(dir, f));
-              }
-            }
-            for (const f of files) JSON.parse(fs.readFileSync(f, "utf8"));
-            console.log("json ok: " + files.join(", "));
-          '
+          node -e "const fs=require('fs');for(const f of ['package.json','locale/zh.json','locale/en.json'])JSON.parse(fs.readFileSync(f,'utf8'));console.log('json ok')"
       - name: 测试
+        shell: pwsh
         run: npm test
